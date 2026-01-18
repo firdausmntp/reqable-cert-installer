@@ -1,5 +1,5 @@
 #!/system/bin/sh
-# Reqable Certificate Installer v2.1
+# Reqable Certificate Installer v2.3
 # Author: firdausmntp
 # GitHub: https://github.com/firdausmntp/reqable-cert-installer
 #
@@ -14,7 +14,7 @@ SKIPUNZIP=0
 
 print_banner() {
     ui_print "╔════════════════════════════════════════╗"
-    ui_print "║  Reqable Certificate Installer v2.1    ║"
+    ui_print "║  Reqable Certificate Installer v2.3    ║"
     ui_print "║  by firdausmntp                        ║"
     ui_print "╚════════════════════════════════════════╝"
     ui_print ""

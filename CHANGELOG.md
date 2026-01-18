@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v2.3] - 2026-01-18
+
+### Added
+- Auto-detect certificate file (.0 format)
+- User uploads their own certificate (no hardcoded cert)
+- Better module status detection in WebUI
+
+### Changed
+- Changelog format now compatible with SukiSU inline display
+- Improved WebUI reliability
+- Better error handling
+
+### Fixed
+- Module "Active/Inactive" status detection in WebUI
+- SukiSU changelog display (was showing HTML)
+- Certificate detection logic
+
+## [v2.2] - 2026-01-18
+
+### Changed
+- Updated CA certificates
+- Improved compatibility with latest Android security patches
+- Refined installation process
+
 ## [v2.1] - 2025-01-18
 
 ### Added

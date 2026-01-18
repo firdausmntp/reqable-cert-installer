@@ -1,9 +1,9 @@
 # 🔐 Reqable Certificate Installer
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-v2.2-blue?style=for-the-badge" alt="Version"/>
+  <img src="https://img.shields.io/badge/Version-v2.3-blue?style=for-the-badge" alt="Version"/>
   <img src="https://img.shields.io/badge/Android-5.0--15-green?style=for-the-badge&logo=android" alt="Android"/>
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License"/>
+  <img src="https://img.shields.io/badge/License-GPL--3.0-yellow?style=for-the-badge" alt="License"/>
 </p>
 
 <p align="center">
@@ -80,7 +80,7 @@ This Magisk/KernelSU/APatch module installs the **Reqable CA Certificate** into 
 
 ### Step 2: Install Module
 
-1. Download `Reqable-Cert-Installer-v2.2.zip`
+1. Download `Reqable-Cert-Installer-v2.3.zip`
 2. Install via **Magisk/KernelSU/SukiSU/APatch** Manager
 3. **Reboot** device
 
@@ -180,7 +180,14 @@ reqable-cert-installer/
 
 ## 📝 Changelog
 
-### v2.2 (Current)
+### v2.3 (Current)
+- ✅ Auto-detect certificate file (no hardcoded .0)
+- ✅ User uploads their own certificate
+- ✅ Fixed WebUI module status detection
+- ✅ Fixed changelog display in SukiSU (inline format)
+- ✅ Improved SukiSU/KernelSU/APatch compatibility
+
+### v2.2
 - ✅ Fixed WebUI file picker for Android WebView
 - ✅ Auto-close logs on action buttons
 - ✅ Improved status badges and indicators
@@ -201,7 +208,7 @@ reqable-cert-installer/
 
 ## 📄 License
 
-MIT License - See [LICENSE](LICENSE) for details.
+GPL-3.0 License - See [LICENSE](LICENSE) for details.
 
 ---
 

@@ -10,7 +10,7 @@ LOG_FILE="/data/local/tmp/ReqableCert.log"
 CERT_DIR="$MODDIR/system/etc/security/cacerts"
 
 echo "╔════════════════════════════════════════╗"
-echo "║  Reqable Certificate Installer v2.1    ║"
+echo "║  Reqable Certificate Installer v2.3    ║"
 echo "║  by firdausmntp                        ║"
 echo "╚════════════════════════════════════════╝"
 echo ""

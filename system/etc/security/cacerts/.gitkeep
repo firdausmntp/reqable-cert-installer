@@ -1,0 +1,21 @@
+# Reqable Certificate Directory
+
+This folder should contain your Reqable CA certificate.
+
+## How to add your certificate:
+
+1. Open **Reqable** app
+2. Go to **Settings** → **HTTPS Capture** → **Root Certificate**
+3. Click **Export** → Choose **System Format (.0)**
+4. Copy the exported `.0` file to this directory
+5. Reboot your device
+
+## Alternative (WebUI):
+
+1. Open your **KernelSU/APatch/SukiSU** manager
+2. Find this module → Click **WebUI**
+3. Upload your certificate directly
+
+---
+
+**Note:** The `.0` filename is a hash of the certificate. Each certificate will have a unique name.

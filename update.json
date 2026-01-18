@@ -1,6 +1,6 @@
 {
-  "version": "v2.2",
-  "versionCode": 22,
-  "zipUrl": "https://github.com/firdausmntp/reqable-cert-installer/releases/download/v2.2/Reqable-Cert-Installer-v2.2.zip",
-  "changelog": "https://github.com/firdausmntp/reqable-cert-installer/blob/main/CHANGELOG.md"
+  "version": "v2.3",
+  "versionCode": 23,
+  "zipUrl": "https://github.com/firdausmntp/reqable-cert-installer/releases/download/v2.3/Reqable-Cert-Installer-v2.3.zip",
+  "changelog": "v2.3 (2026-01-18)\n- Auto-detect certificate (.0 file)\n- No hardcoded certificate, user uploads their own\n- Fixed WebUI module status detection\n- Improved SukiSU/KernelSU/APatch compatibility\n- Better APEX injection for Android 14+\n- Fixed changelog display in SukiSU\n\nv2.2\n- Updated CA certificates\n- Improved Android compatibility\n\nv2.1\n- SukiSU detection\n- APEX namespace injection\n- WebUI improvements"
 }

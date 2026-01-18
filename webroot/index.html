@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Reqable Certificate Manager v2.2</title>
+    <title>Reqable Certificate Manager v2.3</title>
     <style>
         :root {
             --bg-primary: #121212;
@@ -102,7 +102,7 @@
     <div class="container">
         <div class="header">
             <h1>🔐 Reqable Certificate Manager</h1>
-            <div class="version">v2.2 | SukiSU/KernelSU/APatch</div>
+            <div class="version">v2.3 | SukiSU/KernelSU/APatch</div>
         </div>
         
         <!-- Upload Card -->
@@ -331,18 +331,20 @@
             const c = document.getElementById('status-container');
             
             try {
-                const [android, api, selinux, moduleCheck, apexCheck] = await Promise.all([
+                const [android, api, selinux, moduleCheck, apexCheck, disabledCheck] = await Promise.all([
                     exec('getprop ro.build.version.release'),
                     exec('getprop ro.build.version.sdk'),
                     exec('getenforce'),
-                    exec(`[ -f ${MODULE_PATH}/module.prop ] && echo yes || echo no`),
-                    exec('[ -d /apex/com.android.conscrypt/cacerts ] && echo yes || echo no')
+                    exec(`[ -d ${MODULE_PATH} ] && [ ! -f ${MODULE_PATH}/disable ] && echo yes || echo no`),
+                    exec('[ -d /apex/com.android.conscrypt/cacerts ] && echo yes || echo no'),
+                    exec(`[ -f ${MODULE_PATH}/disable ] && echo yes || echo no`)
                 ]);
                 
                 const androidVer = android.stdout?.trim() || '?';
                 const apiLevel = api.stdout?.trim() || '?';
                 const selinuxStatus = selinux.stdout?.trim() || '?';
-                const moduleActive = moduleCheck.stdout?.trim() === 'yes';
+                const isDisabled = disabledCheck.stdout?.trim() === 'yes';
+                const moduleActive = moduleCheck.stdout?.trim() === 'yes' && !isDisabled;
                 const apexExists = apexCheck.stdout?.trim() === 'yes';
                 
                 // Check our cert in module

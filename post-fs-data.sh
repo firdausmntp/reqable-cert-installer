@@ -19,7 +19,7 @@ log() {
 }
 
 log "╔══════════════════════════════════════════════════════╗"
-log "║  Reqable Certificate Installer v2.1                  ║"
+log "║  Reqable Certificate Installer v2.3                  ║"
 log "╚══════════════════════════════════════════════════════╝"
 log ""
 log "Post-fs-data started"

@@ -1,7 +1,7 @@
 id=reqable-cert-installer
 name=Reqable Certificate Installer
-version=v2.2
-versionCode=22
+version=v2.3
+versionCode=23
 author=firdausmntp
 description=Install Reqable CA certificate to System CA Store. Supports Magisk/KernelSU/SukiSU/APatch. Android 5.0-15 compatible with APEX bypass for Android 14+.
 updateJson=https://raw.githubusercontent.com/firdausmntp/reqable-cert-installer/main/update.json
