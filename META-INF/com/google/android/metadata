@@ -1,0 +1,10 @@
+# Module Metadata for Root Solutions
+# This file helps identify the module as safe/trusted
+
+module_name=reqable-cert-installer
+module_version=v2.0
+module_author=Reqable Community
+module_type=systemless
+module_safe=true
+open_source=true
+repository=https://github.com/yourusername/reqable-cert-installer

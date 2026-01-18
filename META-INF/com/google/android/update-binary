@@ -1,0 +1,118 @@
+#!/sbin/sh
+# Reqable Certificate Installer - Update Binary
+# Author: firdausmntp
+# GitHub: https://github.com/firdausmntp/reqable-cert-installer
+#
+# Universal installer: Magisk, KernelSU, SukiSU, APatch
+
+#################
+# Initialization
+#################
+
+umask 022
+
+ui_print() { echo "$1"; }
+
+OUTFD=$2
+ZIPFILE=$3
+
+mount /data 2>/dev/null
+
+#################
+# KernelSU / SukiSU Detection
+#################
+
+if [ "$KSU" = "true" ]; then
+    # Detect SukiSU vs KernelSU
+    if [ -f /data/adb/ksu/bin/ksud ]; then
+        if strings /data/adb/ksu/bin/ksud 2>/dev/null | grep -qi "sukisu"; then
+            ui_print "╔═════════════════════════════════════════╗"
+            ui_print "║  SukiSU detected (v$KSU_VER_CODE)        "
+            ui_print "╚═════════════════════════════════════════╝"
+        else
+            ui_print "╔═════════════════════════════════════════╗"
+            ui_print "║  KernelSU detected (v$KSU_VER_CODE)      "
+            ui_print "╚═════════════════════════════════════════╝"
+        fi
+    fi
+    
+    # Load KernelSU module installer
+    if [ -f /data/adb/ksu/bin/ksud ]; then
+        . /data/adb/ksu/module_installer.sh 2>/dev/null
+    elif [ -f /data/adb/ksud ]; then
+        . /data/adb/modules/.core/module_installer.sh 2>/dev/null
+    fi
+    
+    install_module
+    exit 0
+fi
+
+#################
+# APatch Detection
+#################
+
+if [ "$APATCH" = "true" ]; then
+    ui_print "╔═════════════════════════════════════════╗"
+    ui_print "║  APatch detected (v$APATCH_VER_CODE)     "
+    ui_print "╚═════════════════════════════════════════╝"
+    
+    if [ -f /data/adb/ap/bin/apd ]; then
+        . /data/adb/ap/module_installer.sh 2>/dev/null
+    fi
+    
+    install_module
+    exit 0
+fi
+
+#################
+# Magisk Detection
+#################
+
+require_new_magisk() {
+    ui_print "╔═════════════════════════════════════════╗"
+    ui_print "║  ERROR: Please install Magisk v20.4+!   ║"
+    ui_print "╚═════════════════════════════════════════╝"
+    exit 1
+}
+
+if [ -f /data/adb/magisk/util_functions.sh ]; then
+    ui_print "╔═════════════════════════════════════════╗"
+    ui_print "║  Magisk detected                        ║"
+    ui_print "╚═════════════════════════════════════════╝"
+    
+    . /data/adb/magisk/util_functions.sh
+    [ $MAGISK_VER_CODE -lt 20400 ] && require_new_magisk
+    
+    install_module
+    exit 0
+fi
+
+#################
+# Fallback Installation
+#################
+
+ui_print "╔═════════════════════════════════════════╗"
+ui_print "║  Generic installation mode              ║"
+ui_print "╚═════════════════════════════════════════╝"
+
+# Try common installer paths
+for installer in \
+    /data/adb/ksu/module_installer.sh \
+    /data/adb/ap/module_installer.sh \
+    /data/adb/magisk/util_functions.sh \
+    /data/adb/modules/.core/module_installer.sh; do
+    
+    if [ -f "$installer" ]; then
+        ui_print "- Using installer: $installer"
+        . "$installer"
+        install_module
+        exit 0
+    fi
+done
+
+ui_print "╔═════════════════════════════════════════╗"
+ui_print "║  ERROR: No compatible root solution!    ║"
+ui_print "║  Install Magisk, KernelSU, SukiSU,      ║"
+ui_print "║  or APatch first.                       ║"
+ui_print "╚═════════════════════════════════════════╝"
+exit 1

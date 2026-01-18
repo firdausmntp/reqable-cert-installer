@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reqable Certificate Manager v2.2</title>
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-card: #252525;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent: #00c853;
+            --warning: #ff9800;
+            --error: #f44336;
+            --success: #4caf50;
+            --border-radius: 12px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 16px;
+        }
+        .container { max-width: 600px; margin: 0 auto; }
+        .header { text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+        .header h1 { font-size: 22px; margin-bottom: 6px; }
+        .header .version { color: var(--text-secondary); font-size: 13px; }
+        .card { background: var(--bg-card); border-radius: var(--border-radius); padding: 18px; margin-bottom: 14px; }
+        .card-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        .status-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .status-item:last-child { border-bottom: none; }
+        .status-label { color: var(--text-secondary); font-size: 13px; }
+        .status-value { font-size: 13px; font-weight: 500; }
+        .status-ok { color: var(--success); }
+        .status-warning { color: var(--warning); }
+        .status-error { color: var(--error); }
+        .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+        .badge-success { background: rgba(76,175,80,0.2); color: var(--success); }
+        .badge-error { background: rgba(244,67,54,0.2); color: var(--error); }
+        .badge-warning { background: rgba(255,152,0,0.2); color: var(--warning); }
+        .btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; border: none; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; width: 100%; }
+        .btn-primary { background: var(--accent); color: #000; }
+        .btn-secondary { background: var(--bg-secondary); color: var(--text-primary); }
+        .btn-danger { background: rgba(244,67,54,0.2); color: var(--error); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+        .cert-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 8px; }
+        .cert-name { font-size: 13px; font-weight: 500; }
+        .cert-details { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+        .empty-state { text-align: center; padding: 30px; color: var(--text-secondary); font-size: 13px; }
+        .log-container { background: #0d0d0d; border-radius: 8px; padding: 12px; max-height: 180px; overflow-y: auto; font-family: monospace; font-size: 11px; line-height: 1.4; }
+        .log-success { color: var(--success); }
+        .log-error { color: var(--error); }
+        .log-warning { color: var(--warning); }
+        .toast { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%); background: var(--bg-card); padding: 10px 20px; border-radius: 8px; display: none; font-size: 13px; z-index: 200; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .toast.show { display: block; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: var(--bg-card); border-radius: var(--border-radius); padding: 20px; max-width: 350px; width: 100%; }
+        .modal h3 { margin-bottom: 12px; font-size: 16px; }
+        .modal p { color: var(--text-secondary); margin-bottom: 16px; font-size: 13px; }
+        .modal-actions { display: flex; gap: 10px; }
+        .modal-actions .btn { flex: 1; }
+        .info-box { background: rgba(33,150,243,0.1); border-left: 3px solid #2196f3; padding: 10px 12px; border-radius: 6px; margin-top: 12px; font-size: 12px; color: var(--text-secondary); }
+        
+        /* Upload Section */
+        .upload-area {
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--accent);
+            background: rgba(0,200,83,0.05);
+        }
+        .upload-icon { font-size: 32px; margin-bottom: 8px; }
+        .upload-text { font-size: 14px; margin-bottom: 4px; }
+        .upload-hint { font-size: 12px; color: var(--text-secondary); }
+        .file-selected {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            display: none;
+        }
+        .file-selected.show { display: block; }
+        .file-name { font-weight: 500; font-size: 13px; margin-bottom: 4px; }
+        .file-size { font-size: 11px; color: var(--text-secondary); }
+        
+        /* Hidden file input */
+        #file-input { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Reqable Certificate Manager</h1>
+            <div class="version">v2.2 | SukiSU/KernelSU/APatch</div>
+        </div>
+        
+        <!-- Upload Card -->
+        <div class="card">
+            <div class="card-title">📤 Upload Certificate</div>
+            <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Tap to select certificate file</div>
+                <div class="upload-hint">Supports: .0 (Android), .pem, .crt, .cer</div>
+            </div>
+            <!-- File input outside, accept all files to fix Android WebView issue -->
+            <input type="file" id="file-input" accept="*/*">
+            <div class="file-selected" id="file-selected">
+                <div class="file-name" id="selected-file-name">-</div>
+                <div class="file-size" id="selected-file-size">-</div>
+            </div>
+            <button class="btn btn-primary" style="margin-top: 12px;" id="install-btn" onclick="installCert()" disabled>
+                ⬆️ Install Certificate
+            </button>
+            <div class="info-box">
+                📱 <strong>How to get certificate:</strong><br>
+                Reqable → Settings → HTTPS Capture → Root Certificate → Export → <strong>System Format (.0)</strong>
+            </div>
+        </div>
+        
+        <!-- Status Card -->
+        <div class="card">
+            <div class="card-title">📊 Module Status</div>
+            <div id="status-container">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- Certificates Card -->
+        <div class="card">
+            <div class="card-title">📜 Installed Certificates</div>
+            <div id="cert-container">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- Actions Card -->
+        <div class="card">
+            <div class="card-title">⚡ Actions</div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="doRefresh()">🔄 Refresh</button>
+                <button class="btn btn-secondary" onclick="toggleLogs()">📋 Logs</button>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="doReinject()">💉 Re-inject</button>
+                <button class="btn btn-danger" onclick="showRebootModal()">🔁 Reboot</button>
+            </div>
+        </div>
+        
+        <!-- Logs Card -->
+        <div class="card" id="logs-card" style="display:none;">
+            <div class="card-title">📋 Logs <span style="font-size:11px;color:var(--text-secondary);margin-left:auto;">(tap Logs to close)</span></div>
+            <div class="log-container" id="log-container"></div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast"></div>
+    
+    <div class="modal-overlay" id="reboot-modal">
+        <div class="modal">
+            <h3>⚠️ Reboot Device?</h3>
+            <p>This will reboot your device to apply certificate changes.</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="hideRebootModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="rebootDevice()">Reboot</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const ksu = window.ksu;
+        const isKsuEnv = typeof ksu !== 'undefined';
+        const MODULE_PATH = '/data/adb/modules/reqable-cert-installer';
+        const CERT_DIR = MODULE_PATH + '/system/etc/security/cacerts';
+        
+        let selectedFile = null;
+        
+        // Execute with timeout
+        function exec(cmd, timeout = 5000) {
+            return new Promise((resolve) => {
+                if (!isKsuEnv) {
+                    console.log('Mock:', cmd);
+                    resolve({ errno: 0, stdout: '', stderr: '' });
+                    return;
+                }
+                
+                let done = false;
+                const timer = setTimeout(() => {
+                    if (!done) { done = true; resolve({ errno: -1, stdout: '', stderr: 'Timeout' }); }
+                }, timeout);
+                
+                try {
+                    ksu.exec(cmd, {}, (r) => {
+                        if (!done) { done = true; clearTimeout(timer); resolve(r || { errno: 0, stdout: '', stderr: '' }); }
+                    });
+                } catch (e) {
+                    if (!done) { done = true; clearTimeout(timer); resolve({ errno: -1, stdout: '', stderr: e.message }); }
+                }
+            });
+        }
+        
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2500);
+        }
+        
+        function closeLogs() {
+            document.getElementById('logs-card').style.display = 'none';
+        }
+        
+        // File input handler
+        document.getElementById('file-input').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files.length > 0) {
+                selectFile(e.target.files[0]);
+            }
+        });
+        
+        function selectFile(file) {
+            // Validate extension
+            const name = file.name.toLowerCase();
+            const validExts = ['.0', '.pem', '.crt', '.cer'];
+            const isValid = validExts.some(ext => name.endsWith(ext));
+            
+            if (!isValid) {
+                showToast('❌ Invalid file! Use .0, .pem, .crt, or .cer');
+                return;
+            }
+            
+            selectedFile = file;
+            document.getElementById('selected-file-name').textContent = '📄 ' + file.name;
+            document.getElementById('selected-file-size').textContent = (file.size / 1024).toFixed(2) + ' KB';
+            document.getElementById('file-selected').classList.add('show');
+            document.getElementById('install-btn').disabled = false;
+            showToast('✓ Selected: ' + file.name);
+        }
+        
+        async function installCert() {
+            if (!selectedFile) {
+                showToast('Please select a file first');
+                return;
+            }
+            
+            showToast('Installing...');
+            document.getElementById('install-btn').disabled = true;
+            closeLogs();
+            
+            try {
+                // Read as base64
+                const base64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result.split(',')[1]);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(selectedFile);
+                });
+                
+                let targetName = selectedFile.name;
+                const ext = targetName.toLowerCase().split('.').pop();
+                
+                // Write temp file
+                const tempFile = '/data/local/tmp/reqable_cert_upload';
+                await exec(`echo '${base64}' | base64 -d > ${tempFile}`);
+                
+                // Convert if not .0
+                if (ext !== '0') {
+                    const hashRes = await exec(`openssl x509 -inform PEM -subject_hash_old -in ${tempFile} -noout 2>/dev/null`);
+                    const hash = hashRes.stdout?.trim();
+                    if (hash && /^[0-9a-f]{8}$/.test(hash)) {
+                        targetName = hash + '.0';
+                    } else {
+                        targetName = targetName.replace(/\.[^.]+$/, '') + '.0';
+                    }
+                    await exec(`openssl x509 -inform PEM -in ${tempFile} -outform PEM -out ${tempFile}.conv 2>/dev/null && mv ${tempFile}.conv ${tempFile}`);
+                }
+                
+                // Clear old certs and install new
+                await exec(`rm -f ${CERT_DIR}/*.0 2>/dev/null`);
+                await exec(`cp ${tempFile} "${CERT_DIR}/${targetName}"`);
+                await exec(`chmod 644 "${CERT_DIR}/${targetName}"`);
+                await exec(`chown 0:0 "${CERT_DIR}/${targetName}"`);
+                await exec(`rm -f ${tempFile}`);
+                
+                showToast('✓ Installed! Reboot to apply.');
+                
+                // Reset
+                selectedFile = null;
+                document.getElementById('file-input').value = '';
+                document.getElementById('file-selected').classList.remove('show');
+                document.getElementById('install-btn').disabled = true;
+                
+                await refreshAll();
+                
+            } catch (e) {
+                showToast('❌ Error: ' + e.message);
+                document.getElementById('install-btn').disabled = false;
+            }
+        }
+        
+        async function doRefresh() {
+            closeLogs();
+            showToast('Refreshing...');
+            await refreshAll();
+            showToast('✓ Refreshed');
+        }
+        
+        async function doReinject() {
+            closeLogs();
+            showToast('Re-injecting...');
+            await exec(`sh ${MODULE_PATH}/post-fs-data.sh`, 15000);
+            await refreshAll();
+            showToast('✓ Done! Check logs.');
+        }
+        
+        async function refreshAll() {
+            await refreshStatus();
+            await refreshCerts();
+        }
+        
+        async function refreshStatus() {
+            const c = document.getElementById('status-container');
+            
+            try {
+                const [android, api, selinux, moduleCheck, apexCheck] = await Promise.all([
+                    exec('getprop ro.build.version.release'),
+                    exec('getprop ro.build.version.sdk'),
+                    exec('getenforce'),
+                    exec(`[ -f ${MODULE_PATH}/module.prop ] && echo yes || echo no`),
+                    exec('[ -d /apex/com.android.conscrypt/cacerts ] && echo yes || echo no')
+                ]);
+                
+                const androidVer = android.stdout?.trim() || '?';
+                const apiLevel = api.stdout?.trim() || '?';
+                const selinuxStatus = selinux.stdout?.trim() || '?';
+                const moduleActive = moduleCheck.stdout?.trim() === 'yes';
+                const apexExists = apexCheck.stdout?.trim() === 'yes';
+                
+                // Check our cert in module
+                const certRes = await exec(`ls ${CERT_DIR}/*.0 2>/dev/null | head -1 | xargs basename 2>/dev/null`);
+                const ourCert = certRes.stdout?.trim();
+                
+                let certStatus = 'Not installed';
+                let certClass = 'status-error';
+                let certBadge = 'badge-error';
+                
+                if (ourCert) {
+                    // Check if in APEX
+                    const inApexRes = await exec(`[ -f /apex/com.android.conscrypt/cacerts/${ourCert} ] && echo yes || echo no`);
+                    const inApex = inApexRes.stdout?.trim() === 'yes';
+                    
+                    if (inApex) {
+                        certStatus = `✓ Active (${ourCert})`;
+                        certClass = 'status-ok';
+                        certBadge = 'badge-success';
+                    } else {
+                        certStatus = `⚠ Need reboot (${ourCert})`;
+                        certClass = 'status-warning';
+                        certBadge = 'badge-warning';
+                    }
+                }
+                
+                c.innerHTML = `
+                    <div class="status-item">
+                        <span class="status-label">Module</span>
+                        <span class="badge ${moduleActive ? 'badge-success' : 'badge-error'}">${moduleActive ? '✓ Active' : '✗ Inactive'}</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Android</span>
+                        <span class="status-value">${androidVer} (API ${apiLevel})</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">SELinux</span>
+                        <span class="status-value">${selinuxStatus}</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">APEX CA</span>
+                        <span class="status-value ${apexExists ? 'status-ok' : ''}">${apexExists ? 'Present' : 'N/A'}</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Certificate</span>
+                        <span class="badge ${certBadge}">${certStatus}</span>
+                    </div>
+                `;
+            } catch (e) {
+                c.innerHTML = `<div class="empty-state">Error loading status</div>`;
+            }
+        }
+        
+        async function refreshCerts() {
+            const c = document.getElementById('cert-container');
+            
+            try {
+                const result = await exec(`ls ${CERT_DIR}/*.0 2>/dev/null`);
+                const files = result.stdout?.trim().split('\n').filter(f => f && f.endsWith('.0')) || [];
+                
+                if (files.length === 0) {
+                    c.innerHTML = '<div class="empty-state">No certificates installed.<br>Upload your Reqable certificate above.</div>';
+                    return;
+                }
+                
+                let html = '';
+                for (const file of files) {
+                    const name = file.split('/').pop();
+                    const subRes = await exec(`openssl x509 -in "${file}" -noout -subject 2>/dev/null | sed 's/subject=//' | sed 's/^[[:space:]]*//'`);
+                    const subject = subRes.stdout?.trim() || 'Reqable CA';
+                    
+                    html += `
+                        <div class="cert-item">
+                            <div>
+                                <div class="cert-name">📜 ${escapeHtml(name)}</div>
+                                <div class="cert-details">${escapeHtml(subject.substring(0, 50))}${subject.length > 50 ? '...' : ''}</div>
+                            </div>
+                            <span class="badge badge-success">Installed</span>
+                        </div>
+                    `;
+                }
+                c.innerHTML = html;
+            } catch (e) {
+                c.innerHTML = `<div class="empty-state">Error loading</div>`;
+            }
+        }
+        
+        async function toggleLogs() {
+            const card = document.getElementById('logs-card');
+            const container = document.getElementById('log-container');
+            
+            if (card.style.display === 'none') {
+                card.style.display = 'block';
+                const result = await exec('tail -30 /data/local/tmp/ReqableCert.log 2>/dev/null');
+                const lines = result.stdout?.trim().split('\n') || ['No logs available'];
+                
+                container.innerHTML = lines.map(line => {
+                    let cls = '';
+                    if (line.includes('✓') || line.includes('SUCCESS') || line.includes('success')) cls = 'log-success';
+                    else if (line.includes('✗') || line.includes('ERROR') || line.includes('error')) cls = 'log-error';
+                    else if (line.includes('WARNING') || line.includes('warning')) cls = 'log-warning';
+                    return `<div class="${cls}">${escapeHtml(line)}</div>`;
+                }).join('');
+            } else {
+                card.style.display = 'none';
+            }
+        }
+        
+        function showRebootModal() {
+            closeLogs();
+            document.getElementById('reboot-modal').classList.add('show');
+        }
+        
+        function hideRebootModal() {
+            document.getElementById('reboot-modal').classList.remove('show');
+        }
+        
+        async function rebootDevice() {
+            hideRebootModal();
+            showToast('Rebooting...');
+            await exec('reboot');
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshAll();
+        });
+    </script>
+</body>
+</html>

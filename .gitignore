@@ -1,0 +1,49 @@
+# Build artifacts
+*.zip
+*.tar.gz
+build/
+dist/
+_build_temp/
+
+# Build scripts (personal use only)
+build.py
+build.sh
+build.bat
+
+# Certificates (user must add their own)
+system/etc/security/cacerts/*.0
+system/etc/security/cacerts/*.pem
+system/etc/security/cacerts/*.crt
+system/etc/security/cacerts/*.cer
+
+# Keep placeholder files in repo
+!system/etc/security/cacerts/.gitkeep
+!system/etc/security/cacerts/README.md
+
+# Logs
+*.log
+ReqableCert.log
+CustomCACert.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# Temp
+*.tmp
+*.temp
+*.bak
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
