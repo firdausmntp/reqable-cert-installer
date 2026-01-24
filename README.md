@@ -214,11 +214,11 @@ GPL-3.0 License - See [LICENSE](LICENSE) for details.
 
 ## 🙏 Credits
 
-- [firdausmntp](https://github.com/firdausmntp) - Author & Maintainer
-- [topjohnwu](https://github.com/topjohnwu) - Magisk
-- [tiann](https://github.com/tiann) - KernelSU
-- [pomelohan](https://github.com/pomelohan/SukiSU-Ultra) - SukiSU
-- [bmax121](https://github.com/bmax121) - APatch
+- **[firdausmntp](https://github.com/firdausmntp)** - Author & Maintainer
+- [topjohnwu](https://github.com/topjohnwu) - Magisk Framework
+- [tiann](https://github.com/tiann) - KernelSU Framework
+- [pomelohan](https://github.com/pomelohan/SukiSU-Ultra) - SukiSU Framework
+- [bmax121](https://github.com/bmax121) - APatch Framework
 
 ---
 
